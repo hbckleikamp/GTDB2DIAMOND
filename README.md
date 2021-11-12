@@ -4,8 +4,9 @@ Set of simple auxiliary python scripts to help create GTDB databases for annotat
 <br>
 This collection of scripts is designed to facillitate DIAMOND annotations with GTDB representative protein sequences. 
 It consists of 4 separate small scripts, that can be run in Spyder, or reused for other purposes.
-
-Since DIAMOND varies in dependancies and requirements on different operating systems, automated diamond installation is not included.
+Since DIAMOND varies in dependancies and requirements on different operating systems, automated diamond installation is not included,
+and should be done following 
+<br><br>
 Running a pipeline would consist of:<br>
 -1. GTDB_download.py: to download recent protein fasta files and taxonomy metadata<br>
 -2. GTDB_rename.py: to include organism accession into headers of GTDB protein files <br>
