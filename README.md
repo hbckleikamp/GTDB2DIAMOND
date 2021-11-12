@@ -2,4 +2,4 @@
 Set of simple auxiliary python scripts to help create GTDB databases for annotation with DIAMOND
 
 <br>
-This collection  
+This collection of scripts is d 
