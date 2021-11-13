@@ -24,7 +24,7 @@ diamond_output_columns=["qseqid", "sseqid","pident", "length", "mismatch", "gapo
 #metadata files used for taxonomic annotation
 metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in ["bac120_taxonomy.tsv","ar122_taxonomy.tsv"]]
 #what percentage of top bitscore used for LCA
-topx_bitscore=0.9 
+topx_bitscore=0.9  #(0.9= top 10% bitscore, 0.8= top 20% of highest biscore allowed etc.)
 
 
 #%% modules
