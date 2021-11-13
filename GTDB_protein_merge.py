@@ -40,6 +40,5 @@ def merge(outpath,files):
 #%% script
 
 if not os.path.exists(output_path): os.mkdir(output_path)
-files=[]
-[files.append(str(Path(input_path,i))) for i in os.listdir(input_path)]
+files=[str(Path(input_path,i)) for i in os.listdir(input_path)]
 merge(str(Path(output_path,output_file)),files)
