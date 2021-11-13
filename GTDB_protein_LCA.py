@@ -16,8 +16,8 @@ basedir=os.getcwd()
 
 #%% parameters
 
-input_filepath = "diamond_output.tsv"
-output_filepath= "diamond_lca.tsv"
+input_filepath = "diamond_output.tsv" #placeholder filepath for input file  
+output_filepath= "diamond_lca.tsv"    #placeholder filepath for output file
 
 #diamond output columns (only "sseqid","qseqid","bitscore" are required for the script)
 diamond_output_columns=["qseqid", "sseqid","pident", "length", "mismatch", "gapopen" , "qstart","qend","sstart","send", "evalue","bitscore"] #default diamond output collumns
