@@ -36,27 +36,25 @@ import pandas as pd
 
 ranks=["superkingdom_name","phylum_name","class_name","order_name","family_name","genus_name","species_name"]   
 
-def read_to_gen(cdf):
+def read_to_gen(cdf): #GTDB
     sc=[] #dummy
     for ix,c in enumerate(cdf):
 
+
         print(ix)
-        c=c.reset_index()
-        c=c.loc[:,["qeqid","sseqid","bitscore"]]
-        c.loc[:,"sseqid"]=c.loc[:,"sseqid"].apply(lambda x: "_".join(x.split("_")[-3:])) #split off taxa information in header 
+        c=c.loc[:,["qseqid","sseqid","bitscore"]]
+        c.loc[:,"sseqid"]=c.loc[:,"sseqid"].apply(lambda x: "_".join(x.split("_")[-3:])) 
         c=c.values
-        
+       
         if ix>0:
             c=np.vstack([sc[-1],c]) #add last group
-        
+       
         #find split inds based on protein index
-        ix=np.unique(c["qseqid"].to_numpy(),return_index=True)[1]
-        ix.sort()
-        sc=np.split(c,ix)
-        
-        
-        for group in sc[:-1]:            
-            
+        idx=np.unique(c[:,0],return_index=True)[1]
+        idx.sort()
+        sc=np.split(c,idx[1:])
+
+        for group in sc[:-1]:              
             yield group
     yield sc[-1]
 
