@@ -50,7 +50,7 @@ def read_to_gen(cdf):
             c=np.vstack([sc[-1],c]) #add last group
         
         #find split inds based on protein index
-        ix=np.unique(cdf["qseqid"].to_numpy(),return_index=True)[1]
+        ix=np.unique(c["qseqid"].to_numpy(),return_index=True)[1]
         ix.sort()
         sc=np.split(c,ix)
         
