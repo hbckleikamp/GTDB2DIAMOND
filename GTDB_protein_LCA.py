@@ -89,9 +89,9 @@ for ix,b in enumerate(groups):
             else:
                 ix+=1
         blca=blin.iloc[0,0:ix].tolist()
-        blcas.append(d+blca+[""]*(len(ranks)-len(blca))) 
+        blcas.append(d+blca+[""]*(len(ranks)-len(blca))) #pad
     elif len(lin)==1:
-        blca= d+lin.iloc[0].tolist()+[""]*(len(ranks)-len(blca)) #pad
+        blca= d+lin.iloc[0].tolist() 
         blcas.append(blca) 
     
     #final writes
