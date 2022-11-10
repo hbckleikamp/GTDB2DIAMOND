@@ -25,10 +25,10 @@ If you would like to use this pipeline in your research, please cite the followi
 -Buchfink B, Reuter K, Drost HG, "Sensitive protein alignments at tree-of-life scale using DIAMOND", Nature Methods 18, 366–368 (2021). doi:10.1038/s41592-021-01101-x
 <br>
 -Parks, D.H., et al. 2020. A complete domain-to-species taxonomy for Bacteria and Archaea. Nature Biotechnology, https://doi.org/10.1038/s41587-020-0501-8.
-
+<br>-Kleikamp, Hugo BC, et al. "Comparative metaproteomics demonstrates different views on the complex granular sludge microbiome." bioRxiv (2022).
 
 #### Contact:
--Hugo Kleimamp (Developer): H.B.C.Kleikamp@tudelft.nl<br> 
+-Hugo Kleimamp (Developer): hbckl@bio.aau.dk <br> 
 -Martin Pabst: M.Pabst@tudelft.nl<br>
 
 
