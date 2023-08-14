@@ -22,7 +22,9 @@ output_filepath= "diamond_lca.tsv"    #placeholder filepath for output file
 #diamond output columns (only "sseqid","qseqid","bitscore" are required for the script)
 diamond_output_columns=["qseqid", "sseqid","pident", "length", "mismatch", "gapopen" , "qstart","qend","sstart","send", "evalue","bitscore"] #default diamond output collumns
 #metadata files used for taxonomic annotation
-metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in ["bac120_taxonomy.tsv","ar122_taxonomy.tsv"]]
+#metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in ["bac120_taxonomy.tsv","ar122_taxonomy.tsv"]]
+metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in os.listdir(str(Path(basedir,"GTDB-metadata"))) if i.endswith("_taxonomy.tsv")]
+
 #what percentage of top bitscore used for LCA
 topx_bitscore=0.9  #(0.9= top 10% bitscore, 0.8= top 20% of highest biscore allowed etc.)
 
