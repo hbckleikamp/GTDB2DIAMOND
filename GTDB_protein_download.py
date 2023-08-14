@@ -38,7 +38,8 @@ meta_path=str(Path(basedir,"GTDB-Metadata"))
 #%% modules
 
 #import urllib, gzip, zipfile, shutil, tarfile
-import urllib.request, gzip, zipfile, shutil, tarfile
+import urllib.request, gzip, zipfile, shutil, tarfile, requests
+from tqdm import tqdm 
 import time
 
 def download_with_progress(url, filename):
