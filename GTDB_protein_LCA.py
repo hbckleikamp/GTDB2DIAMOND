@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Fri Nov 12 15:15:10 2021
@@ -18,16 +19,18 @@ basedir=os.getcwd()
 
 input_filepath = "diamond_output.tsv" #placeholder filepath for input file  
 output_filepath= "diamond_lca.tsv"    #placeholder filepath for output file
+metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in os.listdir(str(Path(basedir,"GTDB-metadata"))) if i.endswith("_taxonomy.tsv")] #metadata files used for taxonomic annotation
 
-#diamond output columns (only "sseqid","qseqid","bitscore" are required for the script)
-diamond_output_columns=["qseqid", "sseqid","pident", "length", "mismatch", "gapopen" , "qstart","qend","sstart","send", "evalue","bitscore"] #default diamond output collumns
-#metadata files used for taxonomic annotation
-#metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in ["bac120_taxonomy.tsv","ar122_taxonomy.tsv"]]
-metadata_filepaths=[str(Path(basedir,"GTDB-metadata",i)) for i in os.listdir(str(Path(basedir,"GTDB-metadata"))) if i.endswith("_taxonomy.tsv")]
+
+ranks=["superkingdom_name","phylum_name","class_name","order_name","family_name","genus_name","species_name"]   
+diamond_output_columns=["qseqid", "sseqid","pident", "length", "mismatch", "gapopen" , "qstart","qend","sstart","send", "evalue","bitscore"]     #default diamond output collumns
 
 #what percentage of top bitscore used for LCA
-topx_bitscore=0.9  #(0.9= top 10% bitscore, 0.8= top 20% of highest biscore allowed etc.)
 
+alg="lca" #lca (standard lca) or CAT or Fb_lca
+topx_bitscore=0.9  #(0.9= top 10% bitscore, 0.8= top 20% of highest biscore allowed etc.)
+cutoff_freq  =0.5  #fraction for bitscore lca (only used in CAT and Fb_lca)
+taxa_freq    =5    #minimum taxa count
 
 #%% modules
 
@@ -36,7 +39,7 @@ import pandas as pd
 
 #%% Functions
 
-ranks=["superkingdom_name","phylum_name","class_name","order_name","family_name","genus_name","species_name"]   
+
 
 def read_to_gen(cdf): #GTDB
     sc=[] #dummy
@@ -60,6 +63,75 @@ def read_to_gen(cdf): #GTDB
             yield group
     yield sc[-1]
 
+def LCA(group):
+
+    for i in range(2,9):
+        if len(np.unique(group[:,i]))!=1:
+            i-=1
+            break
+
+    lca=group[0,2:i+1].tolist()
+    return lca+[""]*(len(ranks)-len(lca)) #pad
+
+def CAT_LCA(group,cutoff_freq=0.5):
+    
+    lca=[]
+
+    sbit=group[:,1].sum()*cutoff_freq
+    for i in range(2,9):
+        
+        
+        val,gs=sum_by_group(group[:,1], group[:,i])
+        m=val.argmax()
+        if val[m]>sbit:
+            lca.append(gs[m]) #append most frequent group in case of multiples 
+        
+        else:
+            break
+    return lca+[""]*(len(ranks)-len(lca)) #pad
+
+
+def Fb_LCA(group,cutoff_freq=0.5):
+    
+    lca=[]
+
+    
+    for i in range(2,9):
+    
+        #Cat modification: nonzero only
+        group=group[group[:,i]!=""]
+        if not len(group):
+            break
+        
+        #Cat modification, reassign sbit
+        sbit=group[:,1].sum()*cutoff_freq
+        
+        val,gs=sum_by_group(group[:,1], group[:,i])
+        m=val.argmax()
+        if val[m]>sbit:
+            lca.append(gs[m]) 
+        else:
+            break
+        
+        #Cat modification: Buildup LCA
+        group=group[group[:,i]==gs[m]] 
+        if not len(group):
+            break
+        
+    return lca+[""]*(len(ranks)-len(lca)) #pad
+        
+def sum_by_group(values, groups):
+    order = np.argsort(groups)
+    groups = groups[order]
+    values = values[order]
+    values.cumsum(out=values)
+    index = np.ones(len(groups), 'bool')
+    index[:-1] = groups[1:] != groups[:-1]
+    values = values[index]
+    groups = groups[index]
+    values[1:] = values[1:] - values[:-1]
+    return values, groups
+
 
 #%% Script
 
@@ -78,28 +150,29 @@ groups=read_to_gen(cdf)
 blcas=[] 
 for ix,b in enumerate(groups):
 
-    lin=tdf.loc[b[:,1]] #GTDB
-    d=[b[0,0]]+[str(b[0,2])] #node and bitscore
-    blca=[]
-    if len(lin)>1:
-        lin=pd.DataFrame(lin,columns=ranks)
-        blin=lin[b[:,2]>=b[0,2]*topx_bitscore] #top bitscore cutoff
-        ix=0
-        for r in ranks:
-            if blin[r].nunique()!=1:
-                break
-            else:
-                ix+=1
-        blca=blin.iloc[0,0:ix].tolist()
-        blcas.append(d+blca+[""]*(len(ranks)-len(blca))) #pad
-    elif len(lin)==1:
-        blca= d+lin.iloc[0].tolist() 
-        blcas.append(blca) 
+
+    d=[b[0,0]]+[str(b[0,2])]                     #node and bitscore  
+    b=b[b[:,2]>=b[0,2]*topx_bitscore]            #top bitscore cutoff
+    b=np.hstack([b,tdf.loc[b[:,1]].values])      #add GTDB taxonomy
     
-    #final writes
-    with open(output_filepath, 'a+') as protein:
-        if len(blcas):
-            protein.writelines("\n".join(['\t'.join(i) for i in blcas])+"\n") #write proteins
+    if len(b)>1:
+        if alg=="lca":    r=    LCA(b)           #standard LCA
+        if alg=="CAT":    r=CAT_LCA(b)           #CAT LCA
+        if alg=="Fb_LCA": r= Fb_LCA(b)           #Focusing LCA
+        blcas.append(d+r)
+        
+    elif len(b)==1: blcas.append(b[0,:]) 
+
+df=pd.DataFrame(blcas,columns=["Node","bitscore"]+ranks)
+
+#taxa_filtering
+for rank in ranks:
+    s=df.groupby(rank).size()
+    df.loc[df[rank].isin(s[s<taxa_freq].index),rank]=""
+
+
+#final write
+df.to_tsv(output_filepath,sep="\t")
 
 
 
@@ -110,3 +183,6 @@ for ix,b in enumerate(groups):
 
 
 
+
+
+        
