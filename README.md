@@ -28,7 +28,7 @@ If you would like to use this pipeline in your research, please cite the followi
 <br>-Kleikamp, Hugo BC, et al. "Comparative metaproteomics demonstrates different views on the complex granular sludge microbiome." bioRxiv (2022).
 
 #### Contact:
--Hugo Kleimamp (Developer): hbckl@bio.aau.dk <br> 
+-Hugo Kleimamp (Developer): hugo.kleikamp@uantwerpen.be <br> 
 -Martin Pabst: M.Pabst@tudelft.nl<br>
 
 
